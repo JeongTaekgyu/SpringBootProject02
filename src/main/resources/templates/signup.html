@@ -9,44 +9,167 @@
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="/css/style.css">
     <meta charset="UTF-8">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
     <title>회원가입 페이지</title>
     <script>
+        let chkuserId;
+        let validChk;
+        $(document).ready(function(){
+            $("#login-id-submit").on("click", function(){
+                let idchk = $('#idChk').val();
+                if(idchk == "N" && validChk){
+                    alert('id 중복여부를 확인하세요');
+                } else if(idchk == "Y" && validChk && chkuserId == $('#userid').val()){
+                    //alert('서브밋 직전');
+                    $('#signUpForm').submit();
+                } else if(idchk == "Y" && validChk && chkuserId != $('#userid').val()){
+                    alert('id 중복여부를 확인하세요2');
+                }
+            });
+        });
 
-        /*function validationCheck(){
+        function validationCheck(){
             let userid = $('#userid').val();
             let password = $('#password').val();
             let passwordConfirm = $('#password-confirm').val();
+            //let email = $('#email').val();
 
-            if(userid.length < 3)
+            if( !SignupValidationCheck(userid, password, passwordConfirm) ){
+                //alert('!SignupValidationCheck if문으로 들어옴');
+                validChk = false;
                 return false;
-        }*/
+            }
+            validChk = true;
+
+        }
+
+        function idDupCheck(){
+            let userid = $('#userid').val();
+            chkuserId = userid;
+            //let password = $('#password').val();
+            //let email = $('#email').val();
+            let idRegExp = /^[a-zA-z0-9]{3,}$/;
+
+            if(!idRegExp.test(userid)){
+                alert('닉네임은 영문 대소문자 또는 숫자 3자리 이상이어야 합니다. dup');
+                //form.username.value = "";
+                return false;
+            }
+
+            //url: `/api/idDupCheck/${userid}`,
+            $.ajax({
+                type: 'GET',
+                url: `/user/idDupCheck/${userid}`,
+                // url: '/api/idDupCheck',
+                // contentType: "application/json",
+                // data: JSON.stringify(data),
+                success: function (response) {
+                    //return false;
+                    // response가 true이면 중복
+                    if(response == false){
+                        alert('중복된 아이디입니다.');
+                        //return false;
+                    } else if(response == true){
+                        $("#idChk").attr('value', 'Y');
+                        alert("사용가능한 아이디입니다.");
+                        //return true;
+                    }
+                }
+            });
+            // return을 따로 작성하지 않은 함수의 기본 반환 값은 undefined다.
+        }
+
+        function SignupValidationCheck(userid, password, passwordConfirm){
+
+            let idRegExp = /^[a-zA-Z0-9]{3,20}$/;
+
+            if(!idRegExp.test(userid)){
+                alert('닉네임은 영문 대소문자 또는 숫자 3자리 이상 20자리 이하이어야 합니다.');
+                //form.username.value = "";
+                return false;
+            }
+
+            // [^a-z]가 a-z 를 제외하고 모든 문자를 매칭 하기 때문에 [^]이렇게 하면 모든 문자를 매칭할 것이다.
+            let password1RegExp = /^[^]{4,20}$/;
+
+            if(!password1RegExp.test(password)){
+                alert('비밀번호는 영문 대소문자 또는 숫자 4자리 이상 20자리 이하이어야 합니다.');
+                return false;
+            }
+
+            if(password.includes(userid)){ // 패스워드 안에 아이디가 포함되면
+                alert('패스워드안에 아이디가 포함되면 안됩니다.');
+                return false;
+            }
+
+            if(password == ''){
+                alert('비밀번호를 입력해 주세요');
+                return false;
+            } else if(passwordConfirm == ''){
+                alert('비민번호확인을 입력해 주세요');
+                return false;
+            } else if(password != passwordConfirm){
+                alert('비민번호와 비밀번호 확인문자가 다릅니다.');
+                return false;
+            }
+
+            /*let emailregExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+
+            if (!emailregExp.test(email)) {
+                alert('이메일 형식이 아닙니다.!');
+            }*/
+
+            // 닉네임이 비밀번호 안에 들어가 있는지 체크해라
+            return true;
+        }
 
     </script>
 </head>
 <body>
-  <div id="login-form">
-      <div id="login-title">Sign up Select Shop</div>
+<div id="login-form">
+    <div id="login-title">Sign up Select Shop</div>
 
-      <form action="/user/signup" method="post">
-          <div class="login-id-label">id(Username : nickName)</div>
-          <input type="text" name="username" placeholder="Username" class="login-input-box" id="userid">
+    <form action="/user/signup" method="post" name="form" id="signUpForm">
+        <div class="login-id-label">id(Username : nickName)</div>
 
-          <div class="login-id-label">Password</div>
-          <input type="password" name="password" class="login-input-box" id="password">
+        <input type="text" name="username" placeholder="Username" class="login-input-box" id="userid">
+        <button class="btn btn-primary" id="idChk" type="button" style="float:right; margin:20px 0px 0px 15px;"
+                onclick="idDupCheck()" value="N">중복체크</button>
 
-          <div class="login-id-label">Password 확인</div>
-          <input type="password" name="password" class="login-input-box" id="password-confirm">
+        <div class="login-id-label">Password</div>
+        <input type="password" name="password" class="login-input-box" id="password">
 
-          <div class="login-id-label">E-mail</div>
-          <input type="text" name="email" placeholder="E-mail" class="login-input-box">
+        <div class="login-id-label">Password 확인</div>
+        <input type="password" name="password2" class="login-input-box" id="password-confirm">
 
-          <!--<div>
-              <input id="admin-check" type="checkbox" name="admin" onclick="onclickAdmin()" style="margin-top: 40px;">관리자
-              <input id="admin-token" type="password" name="adminToken" placeholder="관리자 암호" class="login-input-box"
-                     style="display:none">
-          </div>-->
-          <button id="login-id-submit" onclick="validationCheck()">회원 가입</button>
-      </form>
-  </div>
+        <!--<div class="login-id-label">E-mail</div>
+        <input type="text" name="email" placeholder="E-mail" class="login-input-box" id="email">-->
+
+        <!--<div>
+            <input id="admin-check" type="checkbox" name="admin" onclick="onclickAdmin()" style="margin-top: 40px;">관리자
+            <input id="admin-token" type="password" name="adminToken" placeholder="관리자 암호" class="login-input-box"
+                   style="display:none">
+        </div>-->
+
+        <!--form 태그 사용하면 return validationCheck() 이렇게 해야 될 것같은데 -->
+
+    </form>
+    <button id="login-id-submit" onclick="return validationCheck();">회원 가입</button>
+
+</div>
 </body>
 </html>

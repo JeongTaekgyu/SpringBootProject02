@@ -25,7 +25,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String email;
 
 //    @Column(nullable = false)
@@ -36,10 +36,17 @@ public class User {
     private Long kakaoId;
 
     // 일반 유저 생성자
+//    public User(String username, String password, String email) {
+//        this.username = username;
+//        this.password = password;
+//        this.email = email;
+//        this.kakaoId = null;
+//    }
+
     public User(String username, String password, String email) {
         this.username = username;
         this.password = password;
-        this.email = email;
+        this.email = email; // null 이다.
         this.kakaoId = null;
     }
 
