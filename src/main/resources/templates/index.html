@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8">
-    <title>2번째 게시판</title>
+    <title>게시글 목록</title>
 
     <!-- Required meta tags -->
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
@@ -26,11 +27,11 @@
     <link rel="stylesheet" href="css/style.css">
 
     <style>
-        .header{
-            /*background-color : #e4f4f5;*/
-            /*height: 75px;*/
-            position: relative;
-        }
+        /*.header{*/
+        /*    !*background-color : #e4f4f5;*!*/
+        /*    !*height: 75px;*!*/
+        /*    position: relative;*/
+        /*}*/
 
         .section{
             margin: auto;
@@ -41,22 +42,93 @@
     </style>
 
     <script>
+        $(document).ready(function () {
+            // HTML 문서를 로드할 때마다 실행합니다.
+            getPostInfos();
+        })
 
+        function viewPost(id){
+            window.location.href = `/views/posting/${id}`;
+        }
+
+        function getPostInfos(){
+            $.ajax({
+                type: 'GET',
+                url: '/views/postInfo',
+                success: function (response) {
+                    for(let i = 0; i < response.length; i++){
+                        let postinfo = response[i];
+                        let id = postinfo['id'];
+                        let username = postinfo['username'];
+                        let title = postinfo['title'];
+                        //let content = postinfo['content'];
+
+                        // 시간 표시하기
+                        let pre_time = postinfo['modifiedAt'];
+                        let time = new Date(pre_time);
+
+                        let year = time.getFullYear();
+                        let month= time.getMonth();
+                        let date = time.getDate();
+                        let hour = time.getHours();
+                        let min = time.getMinutes();
+                        let sec = time.getSeconds();
+                        let realTime = `${year}년 ${month+1}월 ${date}일 ${hour < 10 ? `0${hour}`: hour} : ${min < 10 ? `0${min}` : min} : ${sec < 10 ? `0${sec}` : sec}`;
+                        addHTML(i+1, id, username, title, realTime);
+                    }
+                }
+            });
+        }
+
+        function addHTML(cnt, id, username, title, realTime){
+
+            // 1. HTML 태그를 만든다.
+            let tempHtml = `<tr style="cursor:pointer" onclick="viewPost(${id})">
+                                <th scope="row">${cnt}</th>
+                                <td>${title}</td>
+                                <td>${username}</td>
+                                <td style="width: 250px">${realTime}</td>
+                            </tr>`;
+            $('.tbody-class').append(tempHtml);
+        }
+    </script>
+
+    <script th:inline="javascript">
+        function writePost(){
+            if([[${username}]] == null){
+                alert('로그인한 사용자만 작성할 수 있습니다.');
+                window.location.href = "/user/login";
+            } else{ // get 방식
+                window.location.href = "/create/writePost";
+            }
+        }
     </script>
 
 </head>
 <body>
     <header class="header">
         <div id="header-title-login-user">
-            <span th:text="${username}"></span> 환영합니다
+            <!--<span th:text="${username}"></span>님 환영합니다-->
         </div>
         <div id="header-title-select-shop">
             Bulletin Board
         </div>
 
-        <form id="my_form" method="post" action="/user/logout">
-            <a id="logout-text" href="javascript:{}" onclick="document.getElementById('my_form').submit();">로그아웃</a>
-        </form>
+        <div th:if="${username} != 'null'" th:text="${username}">
+        </div>
+
+        <div sec:authorize="isAnonymous()">
+            <a id="login-text-index" href="/user/login">로그인</a>
+            <!--<form id="login-form" method="post" action="/user/login">
+                <a id="login-text-index" href="javascript:{}" onclick="document.getElementById('login-form').submit();">로그인</a>
+            </form>-->
+        </div>
+        <div sec:authorize="isAuthenticated()">
+            <form id="my_form" method="post" action="/user/logout">
+                <a id="logout-text" href="javascript:{}" onclick="document.getElementById('my_form').submit();">로그아웃</a>
+            </form>
+        </div>
+
     </header>
 
     <section class="section">
@@ -72,7 +144,7 @@
                     <th scope="col">제목</th>
                     <th scope="col">작성자</th>
                     <th scope="col">시간</th>
-                    <th scope="col">삭제</th>
+                    <!--<th scope="col">삭제</th>-->
                 </tr>
                 </thead>
                 <tbody class="tbody-class">

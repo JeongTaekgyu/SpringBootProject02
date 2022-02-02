@@ -62,7 +62,7 @@
             chkuserId = userid;
             //let password = $('#password').val();
             //let email = $('#email').val();
-            let idRegExp = /^[a-zA-z0-9]{3,}$/;
+            let idRegExp = /^[a-zA-z0-9]{3,20}$/;
 
             if(!idRegExp.test(userid)){
                 alert('닉네임은 영문 대소문자 또는 숫자 3자리 이상이어야 합니다. dup');

@@ -2,7 +2,6 @@ package com.taek.w4springpjt.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.taek.w4springpjt.dto.SignupRequestDto;
-import com.taek.w4springpjt.model.User;
 import com.taek.w4springpjt.repository.UserRepository;
 import com.taek.w4springpjt.service.KakaoUserService;
 import com.taek.w4springpjt.service.UserService;

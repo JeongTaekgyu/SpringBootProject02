@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    <style>
+        .header{
+            background-color : #e4f4f5;
+            height: 75px;
+        }
+
+        .section{
+            margin: auto;
+            width: 1200px;
+            height: 600px;
+        }
+
+        .formClass{
+            margin: 30px auto 20px auto;
+            padding: 50px 20px 50px 60px;
+            border: #e4f4f5 solid 5px;
+            border-radius: 12px;
+            width: 900px;
+        }
+
+    </style>
+
+    <script>
+
+        function showEdit(){
+            if( $('#editBtn').prop("readonly") != true){
+                $('#inputName').prop('readonly',false);
+                $('#inputTitle').prop('readonly',false);
+                $('#contentText').prop('readonly',false);
+
+                $('#editBtn').prop('readonly',true);
+                $('#editBtn').text('취소');
+                $('#editConfirmBtn').prop('hidden',false);
+            } else{
+                $('#inputName').prop('readonly',true);
+                $('#inputTitle').prop('readonly',true);
+                $('#contentText').prop('readonly',true);
+
+                $('#editBtn').prop('readonly',false);
+                $('#editBtn').text('수정');
+                $('#editConfirmBtn').prop('hidden',true);
+            }
+        }
+
+        function confirmEdit(id){
+            let username = $('#inputName').val().trim();
+            let title = $('#inputTitle').val().trim();
+            let content = $('#contentText').val().trim();
+
+            // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
+            if(isValidContents(username, title, content) == false){
+                return;
+            }
+
+            // 3. 전달할 data JSON으로 만듭니다.
+            let data = {'username': username, 'title':title, 'content': content};
+
+            $.ajax({
+                type: "PUT",
+                url: `/api/update/${id}`,    // ${data} 있을 때는 백틱으로 묶는다.
+                contentType: "application/json",    // 문자열로 넘겨줘도 json이라고 인식할 수 있게끔 만든다.
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert('게시글 변경에 성공하였습니다.');
+                    //window.location.reload();
+                    window.location.href ="/";
+                }
+            });
+        }
+
+        function isValidContents(username, title, content){
+            if(username == ''){
+                alert('이름을 입력해 주세요');
+                return false;
+            }
+            else if(title == ''){
+                alert('제목을 입력해 주세요');
+                return false;
+            }
+            else if(content == ''){
+                alert('내용을 입력해 주세요');
+                return false;
+            }
+
+            if(username.trim().length > 30){
+                alert('이름이 30자를 초과 했습니다.');
+                return false;
+            }
+            else if(title.trim().length > 40){
+                alert('제목이 40자를 초과했습니다.');
+                return false;
+            }
+            else if(content.trim().length > 180){
+                alert('내용이 180자를 초과했습니다.');
+                return false;
+            }
+
+            return true;
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <header class="header">
+        <div>
+            <span style="cursor:pointer; font-size: x-large; border:solid skyblue 3px; border-radius: 5px; padding: 10px;"
+                  onclick="window.location.href='/'">메인 페이지로</span>
+        </div>
+    </header>
+
+    <section class="section">
+        <form class="formClass" th:object="${post}">
+            <div class="form-group row">
+                <label for="inputName" class="col-sm-1 col-form-label">이름</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputName" th:value="*{username}" readonly/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputTitle" class="col-sm-1 col-form-label">제목</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputTitle" th:value="*{title}" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="contentText">내용</label>
+                <div class="col-sm-11">
+                <textarea class="form-control" id="contentText" rows="3"
+                          style="height: 230px" th:text="*{content}" readonly></textarea>
+                </div>
+            </div>
+            <div>
+                <p style="text-align: right" th:text="${#temporals.format(timeAt, 'yyyy -MM -dd &nbsp; HH : mm : ss')}"></p>
+            </div>
+        </form>
+        <div th:object="${post}">
+            <span style="width: 300px; margin: 10px 10px 10px 73%">
+                <!--<button id="editBtn" class="btn btn-primary" style="margin: 0px 0px 20px 20px"
+                    onclick="showEdit()">수정</button>-->
+                <button id="editConfirmBtn" class="btn btn-primary" style="margin: 0px 0px 20px 20px" hidden
+                    th:onclick="confirmEdit([[${id}]])">반영</button>
+                <!-- thymeleaf로 onclick 사용할때랑 함수에 인자 넣을때는 위에 처럼 하면 되는구나-->
+            </span>
+
+        </div>
+    </section>
+
+</body>
+</html>

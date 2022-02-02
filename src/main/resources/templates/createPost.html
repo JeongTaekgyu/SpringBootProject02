@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>게시글 작성</title>
+
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    <!-- style.css 이거 왜 적용 안되지?-->
+    <!--<link rel="stylesheet" href="css/style.css">-->
+
+    <style>
+        .header{
+            background-color : #e4f4f5;
+            height: 75px;
+        }
+
+        .section{
+            margin: auto;
+            width: 1200px;
+            height: 600px;
+        }
+
+        .formClass{
+            margin: 30px auto 20px auto;
+            padding: 50px 20px 50px 60px;
+            border: #e4f4f5 solid 5px;
+            border-radius: 12px;
+            width: 900px;
+        }
+    </style>
+
+    <script>
+        function createPost(){
+            // 1. 작성한 글 정보를 불러온다.
+            let name = $('#inputName').val();
+            let title = $('#inputTitle').val();
+            let content = $('#contentText').val();
+
+            // 2. 작성한 정보가 올바른지 체크한다.
+            if(isValidContents(name, title, content) == false){
+                return;
+            }
+
+            let data = {'username':name, 'title':title, 'content':content};
+
+            $.ajax({
+                type: "POST",
+                url: "/create/writePost",
+                contentType: "application/json", // JSON 형식으로 전달함을 알리기
+                data: JSON.stringify(data), // body영역에 내가 원하는 데이터를 넣어주기
+                // 참고로 JSON.stringify 는 JSON을 문자열로 만들어 주는 것이다.
+                // JSON을 문자열로 변환하는 이유는 문자열로 밖에 정보를 주고 받을 수 없기 때문에
+                // 이렇게 문자열로 바뀌어도 contentType에 json을 표시하면 json으로 번역하라는 말이다.
+                success: function (response) {
+                    alert('메시지가 성공적으로 작성되었습니다.');
+                    //window.location.reload();
+                    window.location.href = "/";
+                }
+            });
+        }
+
+        function isValidContents(name, title, content){
+            if(name == ''){
+                alert('이름을 입력해 주세요');
+                return false;
+            }
+            else if(title == ''){
+                alert('제목을 입력해 주세요');
+                return false;
+            }
+            else if(content == ''){
+                alert('내용을 입력해 주세요');
+                return false;
+            }
+
+            if(name.trim().length > 30){
+                alert('이름이 30자를 초과 했습니다.');
+                return false;
+            }
+            else if(title.trim().length > 40){
+                alert('제목이 40자를 초과했습니다.');
+                return false;
+            }
+            else if(content.trim().length > 180){
+                alert('내용이 180자를 초과했습니다.');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+
+</head>
+<body>
+
+    <header class="header">
+        <div>
+            <span style="cursor:pointer; font-size: x-large; border:solid skyblue 3px; border-radius: 5px; padding: 10px;"
+                  onclick="window.location.href='/'">메인 페이지로</span>
+        </div>
+        <div id="header-title-login-user">
+            <span th:text="${username}"></span>님 환영합니다
+        </div>
+        <div id="header-title-select-shop">
+            Bulletin Board
+        </div>
+
+        <form id="my_form" method="post" action="/user/logout">
+            <a id="logout-text" href="javascript:{}" onclick="document.getElementById('my_form').submit();">로그아웃</a>
+        </form>
+    </header>
+
+    <section class="section">
+        <form class="formClass">
+            <div class="form-group row">
+                <label for="inputName" class="col-sm-1 col-form-label">이름</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputName" placeholder="이름을 입력하세요">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputTitle" class="col-sm-1 col-form-label">제목</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputTitle" placeholder="제목을 입력하세요">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="contentText">내용</label>
+                <div class="col-sm-11">
+                    <textarea class="form-control" id="contentText" rows="3" placeholder="내용을 입력하세요"
+                              style="height: 230px"></textarea>
+                </div>
+            </div>
+        </form>
+        <div>
+            <button class="btn btn-primary" type="submit" style="margin: 20px auto; display: block;"
+                    onclick="createPost()">생성</button>
+        </div>
+    </section>
+
+    <footer></footer>
+</body>
+</html>

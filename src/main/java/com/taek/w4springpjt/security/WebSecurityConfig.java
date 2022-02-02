@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@Configuration
+@Configuration // 서버가 기동될 때 설정해주겠다.
 @EnableWebSecurity // 스프링 Security 지원을 가능하게 함
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -35,6 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          .antMatchers("/user/**").permitAll() 이것만으로는 허용이 안된다. 즉, csrf 라는 것 때문에 post 요청이 오면 스프링 시큐리티가 자동적으로
          csrf 토큰을 확인하는 작업이 있는데 그 csrf를 무시하는 처리를 해준다 (스프링 프레임워크를 사용하면 프레임워크의 룰을 따라야하기 때문에 받아 들이자 )
          */
+        // 이거 딱보니까 경로가 /user/** 으로 오는건 다 ...
 //        http.csrf()
 //                .ignoringAntMatchers("/user/**");
 
@@ -45,25 +46,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/css/**").permitAll()
                 // 회원 관리 처리 API 전부를 login 없이 허용
                 .antMatchers("/user/**").permitAll()
+                // '/' 경로를 로그인 없이 허용
+                .antMatchers("/").permitAll()
+                // views는 다 보여주는걸로 하자
+                .antMatchers("/views/**").permitAll()
                 // 그 외 어떤 요청이든 '인증'
                 .anyRequest().authenticated()
                 .and()
-                // 로그인 기능 허용
-                .formLogin()
-                // 로그인 View 제공 (GET /user/login)
-                .loginPage("/user/login")   // 로그인 페이지 경로 이동 (컨트롤러가 받는다 )
-                // 로그인 처리 (POST /user/login)
-                .loginProcessingUrl("/user/login")
-                // 로그인 성공 시 url ( '/(루트)'위치로 이동 )
-                .defaultSuccessUrl("/")
-                // 로그인 처리 후 실패 시 URL
-                .failureUrl("/user/login?error")
-                .permitAll()    // 로그인에 관련된 기능에 대해서 허용을 해줘라
+                    // 로그인 기능 허용
+                    .formLogin()
+                    // 로그인 View 제공 (GET /user/login)
+                    .loginPage("/user/login")   // 로그인 페이지 경로 이동 (컨트롤러가 받는다 )
+                    // 로그인 처리 (POST /user/login)
+                    .loginProcessingUrl("/user/login")
+                    // 로그인 성공 시 url ( '/(루트)'위치로 이동 )
+                    .defaultSuccessUrl("/")
+                    // 로그인 처리 후 실패 시 URL
+                    .failureUrl("/user/login?error")
+                    .permitAll()    // 로그인에 관련된 기능에 대해서 허용을 해줘라
                 .and()
-                // 로그아웃 기능 허용
-                .logout()
-                // 로그아웃 처리 URL
-                .logoutUrl("/user/logout")
-                .permitAll();
+                    // 로그아웃 기능 허용
+                    .logout()
+                    // 로그아웃 처리 URL
+                    .logoutUrl("/user/logout")
+                    .permitAll();
     }
 }
