@@ -44,17 +44,17 @@
     <script>
         $(document).ready(function () {
             // HTML 문서를 로드할 때마다 실행합니다.
-            getPostInfos();
+            getPostListInfos();
         })
 
         function viewPost(id){
             window.location.href = `/views/posting/${id}`;
         }
 
-        function getPostInfos(){
+        function getPostListInfos(){
             $.ajax({
                 type: 'GET',
-                url: '/views/postInfo',
+                url: '/views/postList',
                 success: function (response) {
                     for(let i = 0; i < response.length; i++){
                         let postinfo = response[i];

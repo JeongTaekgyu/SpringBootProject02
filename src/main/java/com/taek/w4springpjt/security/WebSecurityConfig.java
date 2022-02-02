@@ -40,6 +40,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .ignoringAntMatchers("/user/**");
 
         http.authorizeRequests()
+                // 그럼 만약에 로그인 안한 사용자가
+                // 권한이 없는 곳을 접근하면 어디로 보내줌? /로 보내 주는건가? 그런 어디서 처러하지?
+
                 // image 폴더를 login 없이 허용
                 .antMatchers("/images/**").permitAll()
                 // css 폴더를 login 없이 허용

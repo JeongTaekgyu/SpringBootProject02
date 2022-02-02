@@ -27,13 +27,13 @@ public class PostController {
     }
 
     @ResponseBody
-    @GetMapping("/views/postInfo")
+    @GetMapping("/views/postList")
     public List<Post> readPostList(){
         return postRepository.findAllByOrderByModifiedAtDesc();
     }
 
     @GetMapping("/views/posting/{id}")
-    public ModelAndView viewPost(@PathVariable Long id){
+    public ModelAndView viewPost(@PathVariable Long id,  @AuthenticationPrincipal UserDetailsImpl userDetails){
         ModelAndView mv = new ModelAndView();
         // Post형에 Optional 형을 넣는데 되는데.. 근데 예외처리 안하면 형이 달라서 안된다.
         // 아하 findBy(id)한게 Optional형 이기 때문에 이렇게 하는게 맞다
@@ -42,6 +42,12 @@ public class PostController {
                 () -> new NullPointerException("id가 존재하지 않습니다.")
         );
 
+        try{
+            mv.addObject("login_username",userDetails.getUsername());
+        } catch (NullPointerException exception){
+            mv.addObject("login_username",null);
+            // 여기서 mv.setViewName("index")를 주고 가도 되지않을까 로그인 안한상태에서 강제로 컨트롤러 경로가면 안되는데..
+        }
         mv.addObject("post",post);
         mv.addObject("timeAt",post.getModifiedAt());
         mv.setViewName("viewPost");

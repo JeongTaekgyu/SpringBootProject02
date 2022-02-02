@@ -43,32 +43,193 @@
             width: 900px;
         }
 
+        .area-write{
+            position: relative;
+            margin: auto;
+            width: 900px;
+            border:solid blue 1px;
+        }
+
     </style>
 
-    <script>
+    <script th:inline="javascript">
 
-        function showEdit(){
-            if( $('#editBtn').prop("readonly") != true){
-                $('#inputName').prop('readonly',false);
-                $('#inputTitle').prop('readonly',false);
-                $('#contentText').prop('readonly',false);
+        $(document).ready(function () {
+            // HTML 문서를 로드할 때마다 실행합니다.
+            getMessages();
+        })
 
-                $('#editBtn').prop('readonly',true);
-                $('#editBtn').text('취소');
-                $('#editConfirmBtn').prop('hidden',false);
+        // 댓글을 불러와서 보여준다.
+        function getMessages() {
+            // 1. 기존 댓굴 내용을 지웁니다.
+            $('#comment-list').empty();
+
+            // 2. 메모 목록을 불러와서 HTML로 붙입니다.
+            $.ajax({
+                type: 'GET',
+                url: '/views/commentList',
+                success: function (response) {
+                    console.log('~~~', response);
+                    for (let i = 0; i < response.length; i++) {
+                        let commentInfo = response[i];
+                        let id = commentInfo['id'];
+                        let username = commentInfo['username'];
+                        let comment = commentInfo['comment'];
+                        let modifiedAt = commentInfo['modifiedAt'];
+                        console.log(id, username, comment, modifiedAt);
+                        addHTML(id, username, comment, modifiedAt);
+                    }
+                }
+            })
+        }
+
+        // 메모 하나를 HTML로 만들어서 body 태그 내 원하는 곳에 붙입니다.
+        function addHTML(id, username, comment, modifiedAt) {
+
+            let login_username = [[${login_username}]];
+            console.log('username : ',username);
+            console.log('~~~login_username : ',login_username);
+
+            // 1. HTML 태그를 만듭니다.
+            let tempHtml = `<div class="card" style="width: 700px; margin:auto">
+                                <!-- date/username 영역 -->
+                                <div class="metadata">
+                                    <div class="date">
+                                        ${modifiedAt}
+                                    </div>
+                                    <div id="${id}-username" class="username">
+                                        ${username}
+                                    </div>
+                                </div>
+                                <!-- comment 조회/수정 영역-->
+                                <div class="comment" style="margin: auto">
+                                    <div id="${id}-comment" class="text">
+                                    </div>
+                                    <div id="${id}-editarea" class="edit">
+                                        <textarea id="${id}-textarea" class="te-edit" name="" id="" style="width: 700px" readonly>${comment}</textarea>
+                                    </div>
+                                </div>
+                                <!-- 버튼 영역-->
+                                <div class="footer">
+                                    <button id="${id}-edit" class="btn btn-primary" onclick="showEdit('${id}','${username}', '${id}-textarea', '${id}-edit', '${id}-delete', '${id}-submit')">수정</button>
+                                    <button id="${id}-delete" class="btn btn-danger" onclick="deleteOne('${id}','${username}')">삭제</button>
+                                    <button id="${id}-submit" class="btn btn-primary" onclick="submitEdit('${id}', '${username}', '${id}-textarea')" hidden>저장</button>
+                                </div>
+                            </div>`;
+
+                                    /*<button id="${id}-edit" className="btn btn-primary" onClick="editPost('${id}','${username}', '${id}-textarea')">수정</button>*/
+            // 2. #comment-list 에 HTML을 붙인다.
+            $('#comment-list').append(tempHtml);
+        }
+
+        function showEdit(id, username, idTextarea, idEdit, idDeleteBtn, idSubmit){
+
+            if([[${login_username}]] != username){
+                alert('권한이 없습니다..');
+                return;
+            }
+            // 댓글 내용 고치고 취소 누르면.. 원래대로 돌아오게 해야하는데
+            //let temp = $('#'+idTextarea).val();
+            if( $('#'+idTextarea).prop('readonly') == true ){ // 수정 처음 누르상태
+                console.log('수정 눌렀다');
+                $('#'+idEdit).text('취소');
+                $('#'+idTextarea).prop('readonly',false);   // 댓글 수정할 수 있게
+                $('#'+idDeleteBtn).prop('hidden',true);     // 삭제 버튼 안보이게
+                $('#'+idSubmit).prop('hidden',false);   // 저장 버튼 보이게
+            } else if ($('#'+idTextarea).prop('readonly') == false){ // 취소 누르기 직전
+                console.log('취소 눌렀다');
+                $('#'+idEdit).text('수정');
+                $('#'+idTextarea).prop('readonly',true);    // 댓글 readonly
+                $('#'+idDeleteBtn).prop('hidden',false);   // 삭제 버튼 보이게
+                $('#'+idSubmit).prop('hidden',true);   // 저장 버튼 안보이게
+                //$('#'+idTextarea).val(temp);
+            }
+
+            //$('#'+idTextarea).prop('readonly',false);
+            console.log('컴컴');
+            // if( $('#editBtn').prop("readonly") != true){
+            //     $('#inputName').prop('readonly',false);
+            //     $('#inputTitle').prop('readonly',false);
+            //     $('#contentText').prop('readonly',false);
+            //
+            //     $('#editBtn').prop('readonly',true);
+            //     $('#editBtn').text('취소');
+            //     $('#editConfirmBtn').prop('hidden',false);
+            // } else{
+            //     $('#inputName').prop('readonly',true);
+            //     $('#inputTitle').prop('readonly',true);
+            //     $('#contentText').prop('readonly',true);
+            //
+            //     $('#editBtn').prop('readonly',false);
+            //     $('#editBtn').text('수정');
+            //     $('#editConfirmBtn').prop('hidden',true);
+            // }
+        }
+
+        function submitEdit(id, username, idTextarea){
+            if([[${login_username}]] == username){
+                alert('로그인한 아이디랑 작성한 아이디랑 같네');
+                //$('#'+idTextarea).prop('readonly',false);
+                //let postid = [[${post.id}]];
+                console.log('~~ ', idTextarea);
+                let comment = $('#'+idTextarea).val(); // 이렇게 표현 가능하구나
+                console.log('~~ comment : ', comment);
+
+                data ={'username': username, 'comment':comment, 'postid':[[${post.id}]]};
+                //postid는 어케 할거야
+                $.ajax({
+                    type: "PUT",
+                    url: `/update/comment/${id}`,    // ${data} 있을 때는 백틱으로 묶는다. 여기서 id는 댓글의 id이다.
+                    contentType: "application/json",    // 문자열로 넘겨줘도 json이라고 인식할 수 있게끔 만든다.
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        alert('댓글 변경에 성공하였습니다.');
+                        window.location.reload();
+                        //window.location.href ="/";
+                    }
+                });
+                // 수정 되게 끔하자
             } else{
-                $('#inputName').prop('readonly',true);
-                $('#inputTitle').prop('readonly',true);
-                $('#contentText').prop('readonly',true);
+                // 어림도 없다 return false 해라
+                alert('어림없지');
+                return;
+            }
+        }
 
-                $('#editBtn').prop('readonly',false);
-                $('#editBtn').text('수정');
-                $('#editConfirmBtn').prop('hidden',true);
+        function deleteOne(id, username){
+            if([[${login_username}]] == username){
+                //alert('삭제 로그인한 아이디랑 작성한 아이디랑 같네');
+
+                if(confirm('정말로 댓글을 삭제하시 겠습니까?') == true){
+                    $.ajax({
+                        type: "DELETE",
+                        url: `/delete/comment/${id}`, //여기서 id는 댓글의 id  ${data} 있을 때는 백틱으로 묶는다.
+                        success: function (response) {
+                            alert('메시지 삭제에 성공하였습니다.');
+                            window.location.reload();
+                            // if id가
+                        }
+                    });
+                } else {
+                    return;
+                }
+                // 1. DELETE /api/memos/{id} 에 요청해서 메모를 삭제합니다.
+                /*$.ajax({
+                    type: "DELETE",
+                    url: `/delete/comment/${id}`, //여기서 id는 댓글의 id  ${data} 있을 때는 백틱으로 묶는다.
+                    success: function (response) {
+                        alert('메시지 삭제에 성공하였습니다.');
+                        window.location.reload();
+                        // if id가
+                    }
+                });*/
+            } else{
+                alert('권한이 없네요~');
             }
         }
 
         function confirmEdit(id){
-            let username = $('#inputName').val().trim();
+            /*let username = $('#inputName').val().trim();
             let title = $('#inputTitle').val().trim();
             let content = $('#contentText').val().trim();
 
@@ -90,37 +251,60 @@
                     //window.location.reload();
                     window.location.href ="/";
                 }
+            });*/
+        }
+
+        function isValidContents(comment) {
+            if (comment == '') {
+                alert('댓글을 입력해주세요');
+                return false;
+            }
+            if (comment.trim().length > 140) {
+                // trim()은 앞뒤로 있는 공백을 잘라낸다. 중간 공백은 자르지 않는다.
+                alert('공백 포함 140자 이하로 입력해주세요');
+                return false;
+            }
+            return true;
+        }
+
+        // 댓글을 생성합니다.
+        function writeComment() {
+            //let username = $('#inputName').val(); // 이렇게 하면 작성한 게시글의 username을 가져온다.
+            let username = [[${login_username}]];
+            // if(username == null){} - 댓글 클릭하면 여기 안오기 때문에 할 필요없음
+            // 다만 /create/writePost 입력하는 경우를 막아야함 일단 지금은 로그인 페이지로 간다.
+            let comment = $('#contents').val();
+            let postid = [[${post.id}]];
+            console.log('~~~ : username : ',username);
+            console.log('~~~ postid: ',postid);
+
+            // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
+            if(isValidContents(comment) == false)
+                return;
+
+            // 4. 전달할 data JSON으로 만듭니다.
+            let data = {'username': username, 'comment': comment, 'postid' : postid};
+
+            // 5. POST /api/memos 에 data를 전달합니다.
+            $.ajax({
+                type: "POST",
+                url: "/create/comment",
+                contentType: "application/json", // JSON 형식으로 전달함을 알리기
+                data: JSON.stringify(data), // body영역에 내가 원하는 데이터를 넣어주기
+                // 참고로 JSON.stringify 는 JSON을 문자열로 만들어 주는 것이다.
+                // JSON을 문자열로 변환하는 이유는 문자열로 밖에 정보를 주고 받을 수 없기 때문에
+                // 이렇게 문자열로 바뀌어도 contentType에 json을 표시하면 json으로 번역하라는 말이다.
+                success: function (response) {
+                    alert('메시지가 성공적으로 작성되었습니다.');
+                    window.location.reload();
+                }
             });
         }
 
-        function isValidContents(username, title, content){
-            if(username == ''){
-                alert('이름을 입력해 주세요');
-                return false;
+        function isLogin(){
+            if([[${login_username}]] == null){
+                alert('로그인한 사용자만 댓글을 작성할 수 있습니다.');
             }
-            else if(title == ''){
-                alert('제목을 입력해 주세요');
-                return false;
-            }
-            else if(content == ''){
-                alert('내용을 입력해 주세요');
-                return false;
-            }
-
-            if(username.trim().length > 30){
-                alert('이름이 30자를 초과 했습니다.');
-                return false;
-            }
-            else if(title.trim().length > 40){
-                alert('제목이 40자를 초과했습니다.');
-                return false;
-            }
-            else if(content.trim().length > 180){
-                alert('내용이 180자를 초과했습니다.');
-                return false;
-            }
-
-            return true;
         }
 
     </script>
@@ -171,6 +355,16 @@
 
         </div>
     </section>
+
+
+    <div class="area-write">
+        <textarea class="field" placeholder="공유하고 싶은 소식을 입력해주세요" name="contents" id="contents"
+                  style="margin: auto; width: 700px" onclick="isLogin()"></textarea>
+        <button class="btn btn-primary" style="display: block; " onclick="writeComment()">작성2</button>
+    </div>
+
+    <div id="comment-list" style="">
+    </div>
 
 </body>
 </html>
