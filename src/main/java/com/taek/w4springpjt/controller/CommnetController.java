@@ -4,8 +4,10 @@ import com.taek.w4springpjt.dto.CommentRequestDto;
 import com.taek.w4springpjt.dto.PostRequestDto;
 import com.taek.w4springpjt.model.Comment;
 import com.taek.w4springpjt.repository.CommentRepository;
+import com.taek.w4springpjt.security.UserDetailsImpl;
 import com.taek.w4springpjt.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,8 +46,11 @@ public class CommnetController {
 
     // 반환도 안할건데 반환해서 뭐하게?
     @DeleteMapping("/delete/comment/{id}")
-    public Long deleteComment(@PathVariable Long id){
-        commentRepository.deleteById(id);
+    public Long deleteComment(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        if(userDetails != null){
+            commentRepository.deleteById(id);
+        }
+        // requestDto == null 이면 아무것도 안한다.
         return id;
     }
 

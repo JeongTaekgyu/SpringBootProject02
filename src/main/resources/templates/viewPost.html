@@ -106,12 +106,12 @@
                                     <div id="${id}-comment" class="text">
                                     </div>
                                     <div id="${id}-editarea" class="edit">
-                                        <textarea id="${id}-textarea" class="te-edit" name="" id="" style="width: 700px" readonly>${comment}</textarea>
+                                        <textarea id="${id}-textarea" class="te-edit" name="" id="" rows="4" cols="90" style="resize: none;" readonly>${comment}</textarea>
                                     </div>
                                 </div>
                                 <!-- 버튼 영역-->
                                 <div class="footer">
-                                    <button id="${id}-edit" class="btn btn-primary" onclick="showEdit('${id}','${username}', '${id}-textarea', '${id}-edit', '${id}-delete', '${id}-submit')">수정</button>
+                                    <button id="${id}-edit" class="btn btn-primary" onclick="showEdit('${id}','${username}','${comment}','${id}-textarea', '${id}-edit', '${id}-delete', '${id}-submit')">수정</button>
                                     <button id="${id}-delete" class="btn btn-danger" onclick="deleteOne('${id}','${username}')">삭제</button>
                                     <button id="${id}-submit" class="btn btn-primary" onclick="submitEdit('${id}', '${username}', '${id}-textarea')" hidden>저장</button>
                                 </div>
@@ -122,7 +122,7 @@
             $('#comment-list').append(tempHtml);
         }
 
-        function showEdit(id, username, idTextarea, idEdit, idDeleteBtn, idSubmit){
+        function showEdit(id, username, comment, idTextarea, idEdit, idDeleteBtn, idSubmit){
 
             if([[${login_username}]] != username){
                 alert('권한이 없습니다..');
@@ -142,28 +142,11 @@
                 $('#'+idTextarea).prop('readonly',true);    // 댓글 readonly
                 $('#'+idDeleteBtn).prop('hidden',false);   // 삭제 버튼 보이게
                 $('#'+idSubmit).prop('hidden',true);   // 저장 버튼 안보이게
-                //$('#'+idTextarea).val(temp);
+                $('#'+idTextarea).val(comment);
             }
 
             //$('#'+idTextarea).prop('readonly',false);
             console.log('컴컴');
-            // if( $('#editBtn').prop("readonly") != true){
-            //     $('#inputName').prop('readonly',false);
-            //     $('#inputTitle').prop('readonly',false);
-            //     $('#contentText').prop('readonly',false);
-            //
-            //     $('#editBtn').prop('readonly',true);
-            //     $('#editBtn').text('취소');
-            //     $('#editConfirmBtn').prop('hidden',false);
-            // } else{
-            //     $('#inputName').prop('readonly',true);
-            //     $('#inputTitle').prop('readonly',true);
-            //     $('#contentText').prop('readonly',true);
-            //
-            //     $('#editBtn').prop('readonly',false);
-            //     $('#editBtn').text('수정');
-            //     $('#editConfirmBtn').prop('hidden',true);
-            // }
         }
 
         function submitEdit(id, username, idTextarea){
@@ -359,7 +342,7 @@
 
     <div class="area-write">
         <textarea class="field" placeholder="공유하고 싶은 소식을 입력해주세요" name="contents" id="contents"
-                  style="margin: auto; width: 700px" onclick="isLogin()"></textarea>
+                  style="margin: auto; resize: none;" rows="4" cols="90" onclick="isLogin()"></textarea>
         <button class="btn btn-primary" style="display: block; " onclick="writeComment()">작성2</button>
     </div>
 
