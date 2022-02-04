@@ -69,9 +69,6 @@ public class PostController {
     @PostMapping("/create/writePost")
     public void createPost(@RequestBody PostRequestDto requestDto){
         Post post = new Post(requestDto);
-        System.out.println(post.getUsername() +",  "+post.getTitle()+",  "+post.getContent());
         postRepository.save(post);
-        //LocalDateTime cr = post.getCreatedAt();
-        //LocalDateTime md = post.getModifiedAt();
     }
 }

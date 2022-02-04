@@ -1,4 +1,4 @@
-/*package com.taek.w4springpjt.model;
+package com.taek.w4springpjt.model;
 
 import com.taek.w4springpjt.dto.SignupRequestDto;
 import com.taek.w4springpjt.repository.UserRepository;
@@ -129,4 +129,4 @@ class UserTest {
         }
 
     }
-}*/
+}

@@ -26,8 +26,6 @@ public class CommnetController {
 
     @PostMapping("/create/comment")
     public void createComment( @RequestBody CommentRequestDto requestDto){
-
-        System.out.println("~~~ 방지칸"+requestDto.getUsername() +", "+requestDto.getComment()+", "+requestDto.getPostid());
         Comment comment = new Comment(requestDto);
         commentRepository.save(comment);
     }
@@ -54,15 +52,4 @@ public class CommnetController {
         // requestDto == null 이면 아무것도 안한다.
         return id;
     }
-
-    /*@PutMapping("/api/update/{id}")
-    public Long updateMemo(@PathVariable Long id, @RequestBody PostRequestDto requestDto){
-        // 파라미터 안에는 받아올 데이터가 있다.
-        return postService.update(id, requestDto);
-    }*/
-
-    /*@PostMapping("/api/comments/{bid}")
-    public Long createComment(@PathVariable Long bid, @RequestBody CommentRequestDto requestDto){
-        Comment comment = commentRepository.save(requestDto.toEn)
-    }*/
 }

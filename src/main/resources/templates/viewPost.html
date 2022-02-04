@@ -289,6 +289,12 @@
         <div>
             <span style="cursor:pointer; font-size: x-large; border:solid skyblue 3px; border-radius: 5px; padding: 10px;"
                   onclick="window.location.href='/'">메인 페이지로</span>
+
+            <span style="float:right">
+                <form id="my_form" method="post" action="/user/logout">
+                    <a id="logout-text" href="javascript:{}" onclick="document.getElementById('my_form').submit();">로그아웃</a>
+                </form>
+            </span>
         </div>
     </header>
 
@@ -333,7 +339,7 @@
     <div class="area-write">
         <textarea class="field" placeholder="공유하고 싶은 소식을 입력해주세요" name="contents" id="contents"
                   style="margin: auto; resize: none;" rows="4" cols="90" onclick="isLogin()"></textarea>
-        <button class="btn btn-primary" style="display: block; " onclick="writeComment()">작성</button>
+        <button class="btn btn-primary" onclick="writeComment()">작성</button>
     </div>
 
     <div id="comment-list" style="">

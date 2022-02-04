@@ -113,6 +113,12 @@
         <div>
             <span style="cursor:pointer; font-size: x-large; border:solid skyblue 3px; border-radius: 5px; padding: 10px;"
                   onclick="window.location.href='/'">메인 페이지로</span>
+
+            <span style="float:right">
+                <form id="my_form" method="post" action="/user/logout">
+                    <a id="logout-text" href="javascript:{}" onclick="document.getElementById('my_form').submit();">로그아웃</a>
+                </form>
+            </span>
         </div>
         <div id="header-title-login-user">
             <span th:text="${username}"></span>님 환영합니다
@@ -121,9 +127,7 @@
             Bulletin Board
         </div>
 
-        <form id="my_form" method="post" action="/user/logout">
-            <a id="logout-text" href="javascript:{}" onclick="document.getElementById('my_form').submit();">로그아웃</a>
-        </form>
+
     </header>
 
     <section class="section">
