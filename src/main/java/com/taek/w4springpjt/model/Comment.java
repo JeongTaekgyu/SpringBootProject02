@@ -24,7 +24,7 @@ public class Comment extends TimeStamped{
     private String comment;
 
     @Column(nullable = false)
-    private String postid;
+    private Long postid;
 
     /*@ManyToOne
     @JoinColumn(name = "post_id")   // 매핑할 외래키 이름

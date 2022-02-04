@@ -1,5 +1,7 @@
 package com.taek.w4springpjt.model;
 
+import com.taek.w4springpjt.dto.SignupRequestDto;
+import com.taek.w4springpjt.validator.UserValidator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,7 +45,17 @@ public class User {
 //        this.kakaoId = null;
 //    }
 
+    public User(SignupRequestDto requestDto){
+        UserValidator.validateUserInput(requestDto);
+
+        this.username = requestDto.getUsername();
+        this.password = requestDto.getPassword();
+        this.email = requestDto.getEmail();
+    }
+
+    // 일반 유저 생성자
     public User(String username, String password, String email) {
+        //UserValidator.validateUserInput(username, password, email);
         this.username = username;
         this.password = password;
         this.email = email; // null 이다.

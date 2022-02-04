@@ -32,10 +32,11 @@ public class CommnetController {
         commentRepository.save(comment);
     }
 
-    @GetMapping("/views/commentList")
-    public List<Comment> readCommentList() {
-        System.out.println("~~ /views/commentList");
-        return commentRepository.findAllByOrderByModifiedAtDesc();
+    @GetMapping("/views/commentList/{postid}")
+    public List<Comment> readCommentList(@PathVariable Long postid) {
+        System.out.println("~~ /views/commentList 의 postid : "+postid);
+        //return commentRepository.findAllByOrderByModifiedAtDesc();
+        return commentRepository.findAllByPostidOrderByModifiedAtDesc(postid);
     }
 
     // 반환해도 페이지 새로고침이 전부라서 반환은 안했다.

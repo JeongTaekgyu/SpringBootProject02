@@ -56,18 +56,19 @@
 
         $(document).ready(function () {
             // HTML 문서를 로드할 때마다 실행합니다.
-            getMessages();
+            getMessages([[${post.id}]]);
         })
 
         // 댓글을 불러와서 보여준다.
-        function getMessages() {
+        function getMessages(postid) {
             // 1. 기존 댓굴 내용을 지웁니다.
             $('#comment-list').empty();
-
-            // 2. 메모 목록을 불러와서 HTML로 붙입니다.
+            //let postid = [[${post.id}]];
+            console.log('~~postid : ',postid);
+            // 2. 댓글 목록을 불러와서 HTML로 붙입니다.
             $.ajax({
                 type: 'GET',
-                url: '/views/commentList',
+                url: `/views/commentList/${postid}`,
                 success: function (response) {
                     console.log('~~~', response);
                     for (let i = 0; i < response.length; i++) {
@@ -146,7 +147,6 @@
             }
 
             //$('#'+idTextarea).prop('readonly',false);
-            console.log('컴컴');
         }
 
         function submitEdit(id, username, idTextarea){
@@ -196,16 +196,6 @@
                 } else {
                     return;
                 }
-                // 1. DELETE /api/memos/{id} 에 요청해서 메모를 삭제합니다.
-                /*$.ajax({
-                    type: "DELETE",
-                    url: `/delete/comment/${id}`, //여기서 id는 댓글의 id  ${data} 있을 때는 백틱으로 묶는다.
-                    success: function (response) {
-                        alert('메시지 삭제에 성공하였습니다.');
-                        window.location.reload();
-                        // if id가
-                    }
-                });*/
             } else{
                 alert('권한이 없네요~');
             }
@@ -343,7 +333,7 @@
     <div class="area-write">
         <textarea class="field" placeholder="공유하고 싶은 소식을 입력해주세요" name="contents" id="contents"
                   style="margin: auto; resize: none;" rows="4" cols="90" onclick="isLogin()"></textarea>
-        <button class="btn btn-primary" style="display: block; " onclick="writeComment()">작성2</button>
+        <button class="btn btn-primary" style="display: block; " onclick="writeComment()">작성</button>
     </div>
 
     <div id="comment-list" style="">

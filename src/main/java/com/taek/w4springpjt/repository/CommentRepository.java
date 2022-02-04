@@ -7,5 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findAllByOrderByModifiedAtDesc();
+    //List<Comment> findAllByOrderByModifiedAtDesc();
+    List<Comment> findAllByPostidOrderByModifiedAtDesc(Long postid);
+
 }

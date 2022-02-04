@@ -1,5 +1,6 @@
 package com.taek.w4springpjt.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+@AllArgsConstructor // 모든 필드 값을 파라미터로 받는 생성자를 만듦
 @Setter
 @Getter
 public class SignupRequestDto {

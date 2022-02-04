@@ -95,19 +95,19 @@
 
         function SignupValidationCheck(userid, password, passwordConfirm){
 
-            let idRegExp = /^[a-zA-Z0-9]{3,20}$/;
+            let idRegExp = /^[a-zA-Z0-9]{3,}$/;
 
             if(!idRegExp.test(userid)){
-                alert('닉네임은 영문 대소문자 또는 숫자 3자리 이상 20자리 이하이어야 합니다.');
+                alert('닉네임은 영문 대소문자 또는 숫자 3자리 이상 이어야 합니다.');
                 //form.username.value = "";
                 return false;
             }
 
             // [^a-z]가 a-z 를 제외하고 모든 문자를 매칭 하기 때문에 [^]이렇게 하면 모든 문자를 매칭할 것이다.
-            let password1RegExp = /^[^]{4,20}$/;
+            let password1RegExp = /^[^]{4,}$/;
 
             if(!password1RegExp.test(password)){
-                alert('비밀번호는 영문 대소문자 또는 숫자 4자리 이상 20자리 이하이어야 합니다.');
+                alert('비밀번호는 영문 대소문자 또는 숫자 4자리 이상 이어야 합니다.');
                 return false;
             }
 
